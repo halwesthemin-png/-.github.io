@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ckb" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>بیرم ناکەی؟</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep:#241220;
+    --bg-deep-2:#3a1930;
+    --card:#33182b;
+    --card-edge:#4d2440;
+    --cream:#f7ead6;
+    --cream-dim:#e7cdb5;
+    --gold:#e8b84b;
+    --gold-dim:#c99a3a;
+    --rose:#e08bab;
+    --rose-deep:#a94d75;
+  }
+
+  * { box-sizing: border-box; }
+
+  html,body{
+    margin:0; padding:0; height:100%;
+    background:
+      radial-gradient(circle at 20% 15%, var(--bg-deep-2), transparent 55%),
+      radial-gradient(circle at 85% 85%, #4a1f3a, transparent 50%),
+      var(--bg-deep);
+    font-family:'Vazirmatn', sans-serif;
+    color:var(--cream);
+    overflow:hidden;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* ambient floating hearts */
+  .float-heart{
+    position:fixed;
+    bottom:-10%;
+    font-size:1.4rem;
+    opacity:0.35;
+    color:var(--rose);
+    animation: rise linear infinite;
+    pointer-events:none;
+    user-select:none;
+    z-index:0;
+  }
+  @keyframes rise{
+    0%{ transform:translateY(0) rotate(0deg); opacity:0; }
+    10%{ opacity:0.4; }
+    100%{ transform:translateY(-115vh) rotate(25deg); opacity:0; }
+  }
+
+  .stage-wrap{
+    position:relative;
+    z-index:1;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+  }
+
+  .card{
+    width:100%;
+    max-width:420px;
+    background: linear-gradient(160deg, var(--card), #291423);
+    border:1px solid var(--card-edge);
+    border-radius:28px;
+    padding:32px 24px 28px;
+    text-align:center;
+    box-shadow:
+      0 0 0 6px rgba(232,184,75,0.06),
+      0 20px 60px rgba(0,0,0,0.55);
+    position:relative;
+    animation: pop-in 0.5s cubic-bezier(.2,.9,.3,1.2);
+  }
+  @keyframes pop-in{
+    from{ opacity:0; transform: scale(0.9) translateY(12px); }
+    to{ opacity:1; transform: scale(1) translateY(0); }
+  }
+
+  .locket{
+    width:150px; height:150px;
+    margin:0 auto 22px;
+    border-radius:50%;
+    padding:5px;
+    background: conic-gradient(from 0deg, var(--gold), var(--rose-deep), var(--gold-dim), var(--gold));
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  }
+  .locket img{
+    width:100%; height:100%;
+    border-radius:50%;
+    object-fit:cover;
+    display:block;
+    background:#1c0e18;
+  }
+
+  .stage-label{
+    font-size:0.72rem;
+    letter-spacing:0.12em;
+    color:var(--gold-dim);
+    text-transform:uppercase;
+    margin-bottom:6px;
+    font-weight:600;
+  }
+
+  .question{
+    font-size:1.35rem;
+    font-weight:700;
+    line-height:1.6;
+    margin: 6px 0 26px;
+    color:var(--cream);
+  }
+
+  .btn-row{
+    display:flex;
+    gap:14px;
+    justify-content:center;
+    position:relative;
+    min-height:56px;
+  }
+
+  button{
+    font-family:'Vazirmatn', sans-serif;
+    font-size:1.05rem;
+    font-weight:700;
+    padding:14px 26px;
+    border-radius:999px;
+    border:none;
+    cursor:pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  button:active{ transform: scale(0.95); }
+
+  .btn-yes{
+    background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+    color:#2b1a0a;
+    box-shadow: 0 6px 18px rgba(232,184,75,0.35);
+  }
+  .btn-yes:hover{ transform: translateY(-2px); box-shadow: 0 10px 24px rgba(232,184,75,0.45); }
+
+  .btn-no{
+    background: rgba(255,255,255,0.06);
+    color: var(--cream-dim);
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+  .btn-no:hover{ background: rgba(255,255,255,0.1); }
+
+  /* troll button on stage 5 */
+  .btn-no.troll{
+    position:fixed;
+    transition: top 0.18s ease, left 0.18s ease;
+    z-index:50;
+  }
+
+  .response-text{
+    font-size:1.5rem;
+    font-weight:900;
+    color:var(--gold);
+    margin-top:8px;
+  }
+
+  .hidden{ display:none !important; }
+
+  .progress-dots{
+    display:flex;
+    gap:7px;
+    justify-content:center;
+    margin-top:22px;
+  }
+  .dot{
+    width:7px; height:7px; border-radius:50%;
+    background: rgba(255,255,255,0.15);
+    transition: background 0.3s;
+  }
+  .dot.active{ background: var(--gold); }
+
+  @media (prefers-reduced-motion: reduce){
+    .float-heart{ animation: none; display:none; }
+    .card{ animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="stage-wrap">
+  <div class="card" id="card">
+
+    <div class="stage-label" id="stageLabel">١ / ٥</div>
+
+    <div class="locket">
+      <img id="stageGif" src="PASTE_GIF_URL_1_HERE" alt="گیف">
+    </div>
+
+    <div class="question" id="stageQuestion">بیرم ناکەی؟🥰</div>
+
+    <div class="btn-row" id="btnRow">
+      <button class="btn-yes" id="yesBtn">بەڵێ</button>
+      <button class="btn-no" id="noBtn">نەخێر</button>
+    </div>
+
+    <div class="progress-dots" id="dots">
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  /* ============================================================
+     REPLACE THESE WITH YOUR OWN GIF URLS
+     ============================================================ */
+  const stages = [
+    { gif: "PASTE_GIF_URL_1_HERE", question: "بیرم ناکەی؟🥰" },
+    { gif: "PASTE_GIF_URL_2_HERE", question: "بەڕاست بیرم ناکەی؟" },
+    { gif: "PASTE_GIF_URL_3_HERE", question: "هەر بەڕاست بیرم ناکەی؟😏" },
+    { gif: "PASTE_GIF_URL_4_HERE", question: "دە برێ بەڵێ بیرت دەکەم🥰" },
+    { gif: "PASTE_GIF_URL_5_HERE", question: "بیرم ناکەی مەلحوون؟😎" }
+  ];
+  const yesResponseGif = "PASTE_GIF_URL_YES_RESPONSE_HERE";
+  const yesResponseText = "منیش بیرت دەکەم🥰";
+  /* ============================================================ */
+
+  let current = 0;
+
+  const gifEl = document.getElementById('stageGif');
+  const qEl = document.getElementById('stageQuestion');
+  const labelEl = document.getElementById('stageLabel');
+  const btnRow = document.getElementById('btnRow');
+  const yesBtn = document.getElementById('yesBtn');
+  const noBtn = document.getElementById('noBtn');
+  const card = document.getElementById('card');
+  const dots = document.querySelectorAll('.dot');
+
+  const stageNums = ["١","٢","٣","٤","٥"];
+
+  function updateDots(){
+    dots.forEach((d,i)=> d.classList.toggle('active', i === current));
+  }
+
+  function renderStage(){
+    gifEl.src = stages[current].gif;
+    qEl.textContent = stages[current].question;
+    labelEl.textContent = stageNums[current] + " / ٥";
+    updateDots();
+
+    // reset no button in case it was a troll button before
+    noBtn.classList.remove('troll');
+    noBtn.style.position = '';
+    noBtn.style.top = '';
+    noBtn.style.left = '';
+    noBtn.textContent = 'نەخێر';
+    noBtn.style.display = '';
+    yesBtn.style.display = '';
+
+    if(current === stages.length - 1){
+      // final stage: make the no button dodge the cursor / touch
+      enableTroll(noBtn);
+    } else {
+      noBtn.onmouseenter = null;
+      noBtn.ontouchstart = null;
+    }
+  }
+
+  function showResponse(){
+    gifEl.src = yesResponseGif;
+    labelEl.textContent = "";
+    qEl.textContent = yesResponseText;
+    btnRow.innerHTML = "";
+    document.getElementById('dots').classList.add('hidden');
+  }
+
+  function dodge(el){
+    const btnW = el.offsetWidth || 100;
+    const btnH = el.offsetHeight || 50;
+    const margin = 16;
+    const maxX = window.innerWidth - btnW - margin;
+    const maxY = window.innerHeight - btnH - margin;
+    const newX = Math.max(margin, Math.random() * maxX);
+    const newY = Math.max(margin, Math.random() * maxY);
+    el.style.position = 'fixed';
+    el.classList.add('troll');
+    el.style.left = newX + 'px';
+    el.style.top = newY + 'px';
+  }
+
+  function enableTroll(el){
+    // give it an initial fixed position near its natural spot
+    const rect = el.getBoundingClientRect();
+    el.style.position = 'fixed';
+    el.classList.add('troll');
+    el.style.left = rect.left + 'px';
+    el.style.top = rect.top + 'px';
+
+    el.onmouseenter = () => dodge(el);
+    el.onclick = (e) => { e.preventDefault(); dodge(el); };
+    el.ontouchstart = (e) => { e.preventDefault(); dodge(el); };
+  }
+
+  yesBtn.addEventListener('click', showResponse);
+
+  noBtn.addEventListener('click', () => {
+    if(current < stages.length - 1){
+      current++;
+      renderStage();
+    }
+  });
+
+  // floating background hearts
+  function spawnHeart(){
+    const heart = document.createElement('div');
+    heart.className = 'float-heart';
+    heart.textContent = Math.random() > 0.5 ? '♥' : '🤍';
+    heart.style.left = Math.random() * 100 + 'vw';
+    heart.style.fontSize = (0.9 + Math.random()*1.2) + 'rem';
+    const duration = 8 + Math.random() * 7;
+    heart.style.animationDuration = duration + 's';
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), duration * 1000);
+  }
+  setInterval(spawnHeart, 900);
+
+  renderStage();
+</script>
+
+</body>
+</html>
